@@ -79,6 +79,10 @@ void updatephi() {
 }
 
 double variable_dphi(double dphi, double U) {
+	if(dphi<0.0) {
+		dphi=-dphi;
+	}
+
 	if(U<1e-9) {
 		return 1.1*dphi;
 	}
