@@ -153,6 +153,8 @@ void doAnIter() {
 	fprintf(stderr,"Average Overlap: %lf\n",sqrt((U/npart)*2.0)/(sigma[0]/2.0));
 	fprintf(stderr,"Pressure on Walls: %lf\n",P);
 	fprintf(stdout,"%E	%E	%E	%E	%E\n",p,c/npart,U,sqrt((U/npart)*2.0)/(sigma[0]/2.0),P);
+	DPHI=variable_dphi(DPHI,U);
+	fprintf(stdout,"DPHI: %E\n",DPHI);
 	phi+=DPHI; //update phi
 	updatephi(); //use the new phi value to get a new sigma and l
 }
@@ -227,19 +229,21 @@ int main(int argc, char* argv[]) {
 	//Gradient();
 	//int k;
 	//for(k=0;k<1;k++) {
+	int iter=0;
 	while(phi<PHI) {
 		doAnIter();
+		iter++;
 		int q;
 		//fprintf(stderr,"PRINT CHECK: %i\n",(int)(phi*1000)%10);
-		if(((((int)(phi/DPHI))%(int)(.01/DPHI)))==0) {
-			sprintf(filename,"%s/%03d.dat",argv[1],(int)(phi*100));
-			fp=fopen((const char*)filename,"w");
-			for(q=0;q<npart;q++) {
-				fprintf(fp,"%i %i %lf %lf %lf %lf %lf %lf %lf %lf\n",j,q,sigma[q],l[q],r[q].x,r[q].y,r[q].z,u[q].x,u[q].y,u[q].z);
-			}
-			j++;
-			fclose(fp);
+		//if(((((int)(phi/DPHI))%(int)(.01/DPHI)))==0) {
+		sprintf(filename,"%s/%03d-%03d.dat",argv[1],iter,(int)(phi*100));
+		fp=fopen((const char*)filename,"w");
+		for(q=0;q<npart;q++) {
+			fprintf(fp,"%i %i %lf %lf %lf %lf %lf %lf %lf %lf\n",j,q,sigma[q],l[q],r[q].x,r[q].y,r[q].z,u[q].x,u[q].y,u[q].z);
 		}
+		j++;
+		fclose(fp);
+		//}
 	}
 	DEMend();
 	return 0;
